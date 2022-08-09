@@ -92,7 +92,7 @@ const App = ({ login = false }) => {
 	return (
 		<Box borderStyle="single" marginRight={2} flexDirection="column">
 			<Gradient name="summer">
-				<BigText text="gFormJS" align="center" font="chrome" />
+				<BigText text="google-formjs" align="center" font="chrome" />
 			</Gradient>
 			{currentStage == 0 ? (
 				<SelectInput items={items} onSelect={handleSelect} />
