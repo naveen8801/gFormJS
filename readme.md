@@ -6,7 +6,7 @@
 ## Install
 
 ```bash
-$ npm install --global gformJS
+$ npm i -g google-formjs
 ```
 
 
