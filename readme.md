@@ -13,7 +13,7 @@ $ npm i -g google-formjs
 ## CLI
 
 ```
-$ gformJS --help
+$ gformjs --help
 
   Description :
     Create google forms directly from terminal very easily

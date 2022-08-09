@@ -1,10 +1,24 @@
 {
 	"name": "google-formjs",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/naveen8801/gFormJS"
 	},
+	"author": {
+		"name": "Naveen",
+		"url": "https://github.com/naveen8801"
+	},
+	"keywords": [
+		"react",
+		"cli",
+		"jsx",
+		"js",
+		"google-form",
+		"gform",
+		"forms",
+		"google"
+	],
 	"license": "MIT",
 	"bin": "cli.js",
 	"engines": {
