@@ -15,12 +15,12 @@ $ npm install --global gformJS
 ```
 $ gformJS --help
 
-	Description :
-    	Create google forms directly from terminal very easily
+  Description :
+    Create google forms directly from terminal very easily
 
-	Usage :
-		Step 1 : $ gformJS
-		Step 2 : Select form 2 options Create Form or Check Form Responses
-		Step 3 : Type no. of question if creating a form
+  Usage :
+    Step 1 : $ gformJS
+    Step 2 : Select form 2 options Create Form or Check Form Responses
+    Step 3 : Type no. of question if creating a form
 
 ```
