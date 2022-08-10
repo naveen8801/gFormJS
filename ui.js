@@ -9,9 +9,26 @@ const { default: SelectInput } = require("ink-select-input");
 const GoogleAuth = require("./core/GoogleAuth");
 const { default: TextInput } = require("ink-text-input");
 const { default: Spinner } = require("ink-spinner");
+const getFormSchema = require("./FormFormat");
+const fs = require("fs");
 
-const QuestionJourney = ({ quesCount }) => {
-	return <Text>{quesCount}</Text>;
+const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState({ err: false, msg: "" });
+
+	return (
+		<>
+			{loading ? (
+				<Text color="green">
+					<Spinner type="dots" /> Creating your form through your file
+				</Text>
+			) : (
+				<>
+					<Text color="green">{FilePath}</Text>
+				</>
+			)}
+		</>
+	);
 };
 
 const SeeResponse = () => {
@@ -19,21 +36,18 @@ const SeeResponse = () => {
 };
 
 const CreateForm = ({ mainStep, setMainStep }) => {
-	const [quesCount, setQuesCount] = useState("");
+	const [FilePath, setFilePath] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [showPrompt, setShowPrompt] = useState(true);
 	const [error, setError] = useState({ err: false, msg: "" });
-	const onSubmitHandler = () => {
+	const onSubmitHandler = async () => {
 		setLoading(true);
 		setShowPrompt(false);
-		if (
-			isNaN(quesCount) ||
-			parseInt(quesCount) > 5 ||
-			parseInt(quesCount) === 0
-		) {
+		const check = await exists(FilePath);
+		if (!isNaN(FilePath) || !check) {
 			setLoading(false);
 			setShowPrompt(true);
-			setError({ err: true, msg: "Plese input a number between 1 and 5" });
+			setError({ err: true, msg: "Plese input a valid path" });
 			return;
 		} else {
 			setLoading(true);
@@ -42,16 +56,24 @@ const CreateForm = ({ mainStep, setMainStep }) => {
 			setMainStep(2);
 		}
 	};
+
+	async function exists(path) {
+		const res = fs.existsSync(path);
+		return res;
+	}
+
 	return (
 		<>
 			{mainStep === 1 ? (
 				<>
 					{showPrompt ? (
 						<>
-							<Text color="green">Enter No. of Questions :</Text>
+							<Text color="green">
+								Enter absolute path of your form json file :{" "}
+							</Text>
 							<TextInput
-								value={quesCount}
-								onChange={setQuesCount}
+								value={FilePath}
+								onChange={setFilePath}
 								onSubmit={onSubmitHandler}
 							/>
 						</>
@@ -64,7 +86,7 @@ const CreateForm = ({ mainStep, setMainStep }) => {
 					{error.err ? <Text color="red">{error.msg}</Text> : null}
 				</>
 			) : (
-				<QuestionJourney quesCount={parseInt(quesCount)} />
+				<PathHandler FilePath={FilePath} />
 			)}
 		</>
 	);
