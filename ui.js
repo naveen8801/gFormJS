@@ -1,6 +1,6 @@
 "use strict";
 const React = require("react");
-const { Text, Box } = require("ink");
+const { Text, Box, Static, Newline } = require("ink");
 const { useEffect, useState } = require("react");
 const createForm = require("./core/createForm");
 const Gradient = require("ink-gradient");
@@ -15,6 +15,24 @@ const fs = require("fs");
 const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState({ err: false, msg: "" });
+	const [jsonData, setJsonData] = useState(null);
+
+	useEffect(() => {
+		if (FilePath) {
+			fs.readFile(FilePath, "utf8", (err, jsonString) => {
+				if (err) {
+					console.log();
+					setError({ err: true, msg: `"File read failed:", ${err}` });
+					setLoading(false);
+					return;
+				}
+				setLoading(false);
+				setJsonData(JSON.parse(jsonString));
+			});
+		}
+	}, []);
+
+	console.log(jsonData);
 
 	return (
 		<>
@@ -24,7 +42,42 @@ const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 				</Text>
 			) : (
 				<>
-					<Text color="green">{FilePath}</Text>
+					{error.err ? (
+						<Text color="red">{error.msg}</Text>
+					) : (
+						<>
+							{jsonData && (
+								<>
+									<Text color="green" bold>
+										Title :
+									</Text>
+									<Text>{jsonData.info.title}</Text>
+									<Newline />
+									<Text color="green" bold>
+										Document Title :
+									</Text>
+									<Text>{jsonData.info.documentTitle}</Text>
+									<Newline />
+									<Text color="green" bold>
+										Description :
+									</Text>
+									<Text>{jsonData.info.description}</Text>
+									<Newline />
+									<Text color="green" bold>
+										Items :
+									</Text>
+									{jsonData.items &&
+										jsonData.items.map((item, i) => (
+											<Box key={i} flexDirection="column">
+												<Text>{item.title}</Text>
+												<Text>{item.description}</Text>
+												<Newline />
+											</Box>
+										))}
+								</>
+							)}
+						</>
+					)}
 				</>
 			)}
 		</>

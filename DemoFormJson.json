@@ -1,0 +1,19 @@
+{
+	"info": {
+		"title": "This is form through JSON file",
+		"documentTitle": "JSON Form",
+		"description": "Testing..."
+	},
+	"items": [
+		{
+			"title": "What's your name ?",
+			"description": "Item1",
+			"questionItem": {
+				"required": true,
+				"textQuestion": {
+					"paragraph": true
+				}
+			}
+		}
+	]
+}
