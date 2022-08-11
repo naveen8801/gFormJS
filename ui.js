@@ -13,26 +13,41 @@ const getFormSchema = require("./FormFormat");
 const fs = require("fs");
 
 const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState({ err: false, msg: "" });
 	const [jsonData, setJsonData] = useState(null);
+	const [url, setUrl] = useState(null);
 
-	useEffect(() => {
+	useEffect(async () => {
 		if (FilePath) {
-			fs.readFile(FilePath, "utf8", (err, jsonString) => {
+			setLoading(true);
+			await fs.readFile(FilePath, "utf8", async (err, jsonString) => {
 				if (err) {
-					console.log();
 					setError({ err: true, msg: `"File read failed:", ${err}` });
 					setLoading(false);
 					return;
 				}
+				let data = JSON.parse(jsonString);
+				let NewReq = [];
+				for (let i = 0; i < data.items.length; i++) {
+					const obj = {
+						createItem: {
+							item: { ...data.items[i] },
+							location: {
+								index: 0,
+							},
+						},
+					};
+					NewReq.push(obj);
+				}
+				const auth = await GoogleAuth();
+				const url = await createForm(auth, data.info, NewReq);
+				setUrl(url);
+				setJsonData(data);
 				setLoading(false);
-				setJsonData(JSON.parse(jsonString));
 			});
 		}
 	}, []);
-
-	console.log(jsonData);
 
 	return (
 		<>
@@ -46,7 +61,7 @@ const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 						<Text color="red">{error.msg}</Text>
 					) : (
 						<>
-							{jsonData && (
+							{jsonData ? (
 								<>
 									<Text color="green" bold>
 										Title :
@@ -75,7 +90,17 @@ const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 											</Box>
 										))}
 								</>
-							)}
+							) : null}
+							{url ? (
+								<Box flexDirection="column">
+									<Text color="green" bold>
+										Form created successfully with follwing url :)
+									</Text>
+									<Text color="blue" bold>
+										{url}
+									</Text>
+								</Box>
+							) : null}
 						</>
 					)}
 				</>

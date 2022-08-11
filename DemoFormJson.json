@@ -1,6 +1,6 @@
 {
 	"info": {
-		"title": "This is form through JSON file",
+		"title": "This is form through JSON file newwww again",
 		"documentTitle": "JSON Form",
 		"description": "Testing..."
 	},
@@ -9,9 +9,11 @@
 			"title": "What's your name ?",
 			"description": "Item1",
 			"questionItem": {
-				"required": true,
-				"textQuestion": {
-					"paragraph": true
+				"question": {
+					"required": true,
+					"textQuestion": {
+						"paragraph": true
+					}
 				}
 			}
 		}
