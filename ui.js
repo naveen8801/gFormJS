@@ -13,7 +13,7 @@ const getFormSchema = require("./FormFormat");
 const fs = require("fs");
 const formSchema = require("./core/FormJsonSchema");
 const Ajv = require("ajv");
-const ajv = new Ajv();
+const ajv = new Ajv({ strict: false });
 const validate = ajv.compile(formSchema);
 
 const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
