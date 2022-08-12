@@ -6,7 +6,7 @@
 <h5 align="center">Awsome tool to create google form through command line quickly. Just add you FormJson file path and you are good to go 🚀</h5>
 
 <p align="center">
-<img src="https://github.com/naveen8801/gFormJS/blob/master/assets/gformjs.gif" alt="gif" width="70%">
+<img src="https://github.com/naveen8801/gFormJS/blob/master/assets/gformjs.gif" alt="gif" width="90%">
 </p>
 
 ### Installation
