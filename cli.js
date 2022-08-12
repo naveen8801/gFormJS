@@ -8,15 +8,16 @@ const meow = require("meow");
 const ui = importJsx("./ui");
 
 const cli = meow(`
+gformjs --help
 
 	Description :
-    	Create google forms directly from terminal very easily
+		Create google forms directly from terminal very easily
 
 	Usage :
-		Step 1 : $ gformJS
+		Step 1 : gformjs
 		Step 2 : Select form 2 options Create Form or Check Form Responses
-		Step 3 : Type no. of question if creating a form
-`
-);
+		Step 3 : Type FormJson file path while creating and formID while gettting form responses
+		Step 4 : That's it 🚀
+`);
 
 render(React.createElement(ui, cli.flags));
