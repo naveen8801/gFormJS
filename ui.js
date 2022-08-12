@@ -11,6 +11,10 @@ const { default: TextInput } = require("ink-text-input");
 const { default: Spinner } = require("ink-spinner");
 const getFormSchema = require("./FormFormat");
 const fs = require("fs");
+const formSchema = require("./core/FormJsonSchema");
+const Ajv = require("ajv");
+const ajv = new Ajv();
+const validate = ajv.compile(formSchema);
 
 const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 	const [loading, setLoading] = useState(false);
@@ -25,26 +29,34 @@ const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 				if (err) {
 					setError({ err: true, msg: `"File read failed:", ${err}` });
 					setLoading(false);
-					return;
-				}
-				let data = JSON.parse(jsonString);
-				let NewReq = [];
-				for (let i = 0; i < data.items.length; i++) {
-					const obj = {
-						createItem: {
-							item: { ...data.items[i] },
-							location: {
-								index: 0,
+				} else {
+					let data = JSON.parse(jsonString);
+					let NewReq = [];
+					for (let i = 0; i < data.items.length; i++) {
+						const obj = {
+							createItem: {
+								item: { ...data.items[i] },
+								location: {
+									index: 0,
+								},
 							},
-						},
-					};
-					NewReq.push(obj);
+						};
+						NewReq.push(obj);
+					}
+					const valid = validate(data);
+					if (!valid) {
+						console.log(validate.errors[0].message);
+						setError({ err: true, msg: validate.errors[0].message });
+						setJsonData(null);
+						setLoading(false);
+					} else {
+						const auth = await GoogleAuth();
+						const url = await createForm(auth, data.info, NewReq);
+						setUrl(url);
+						setJsonData(data);
+						setLoading(false);
+					}
 				}
-				const auth = await GoogleAuth();
-				const url = await createForm(auth, data.info, NewReq);
-				setUrl(url);
-				setJsonData(data);
-				setLoading(false);
 			});
 		}
 	}, []);
