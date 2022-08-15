@@ -13,6 +13,7 @@ const getFormSchema = require("./FormFormat");
 const fs = require("fs");
 const formSchema = require("./core/FormJsonSchema");
 const Ajv = require("ajv");
+const getFormResponse = require("./core/getForm");
 const ajv = new Ajv({ strict: false });
 const validate = ajv.compile(formSchema);
 
@@ -63,66 +64,115 @@ const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 
 	return (
 		<>
-			{loading ? (
-				<Text color="green">
-					<Spinner type="dots" /> Creating your form through your file
-				</Text>
-			) : (
+			{mainStep === 1 ? (
 				<>
-					{error.err ? (
-						<Text color="red">{error.msg}</Text>
+					{loading ? (
+						<Text color="green">
+							<Spinner type="dots" /> Creating your form through your file
+						</Text>
 					) : (
 						<>
-							{jsonData ? (
+							{error.err ? (
+								<Text color="red">{error.msg}</Text>
+							) : (
 								<>
-									<Text color="green" bold>
-										Title :
-									</Text>
-									<Text>{jsonData.info.title}</Text>
-									<Newline />
-									<Text color="green" bold>
-										Document Title :
-									</Text>
-									<Text>{jsonData.info.documentTitle}</Text>
-									<Newline />
-									<Text color="green" bold>
-										Description :
-									</Text>
-									<Text>{jsonData.info.description}</Text>
-									<Newline />
-									<Text color="green" bold>
-										Items :
-									</Text>
-									{jsonData.items &&
-										jsonData.items.map((item, i) => (
-											<Box key={i} flexDirection="column">
-												<Text>{item.title}</Text>
-												<Text>{item.description}</Text>
-												<Newline />
-											</Box>
-										))}
+									{jsonData ? (
+										<>
+											<Text color="green" bold>
+												Title :
+											</Text>
+											<Text>{jsonData.info.title}</Text>
+											<Newline />
+											<Text color="green" bold>
+												Document Title :
+											</Text>
+											<Text>{jsonData.info.documentTitle}</Text>
+											<Newline />
+											<Text color="green" bold>
+												Description :
+											</Text>
+											<Text>{jsonData.info.description}</Text>
+											<Newline />
+											<Text color="green" bold>
+												Items :
+											</Text>
+											{jsonData.items &&
+												jsonData.items.map((item, i) => (
+													<Box key={i} flexDirection="column">
+														<Text>{item.title}</Text>
+														<Text>{item.description}</Text>
+														<Newline />
+													</Box>
+												))}
+										</>
+									) : null}
+									{url ? (
+										<Box flexDirection="column">
+											<Text color="green" bold>
+												Form created successfully with follwing url :)
+											</Text>
+											<Text color="blue" bold>
+												{url}
+											</Text>
+										</Box>
+									) : null}
 								</>
-							) : null}
-							{url ? (
-								<Box flexDirection="column">
-									<Text color="green" bold>
-										Form created successfully with follwing url :)
-									</Text>
-									<Text color="blue" bold>
-										{url}
-									</Text>
-								</Box>
-							) : null}
+							)}
 						</>
 					)}
 				</>
-			)}
+			) : null}
 		</>
 	);
 };
 
-const SeeResponse = () => {
-	return <Text>Responses</Text>;
+const SeeResponse = ({ mainStep, setMainStep }) => {
+	const [formId, setFormId] = useState("");
+	const [error, setError] = useState({ err: false, msg: "" });
+	const [loading, setLoading] = useState(false);
+
+	const onSubmitHandler = async () => {
+		setLoading(true);
+
+		if (formId.trim().length === 0) {
+			setError({ err: true, msg: "Enter a valid string " });
+			setLoading(false);
+		} else {
+			const auth = await GoogleAuth();
+			const data = await getFormResponse(auth, formId);
+			console.log(data);
+			setLoading(false);
+		}
+	};
+
+	return (
+		<>
+			{mainStep === 2 ? (
+				<>
+					{loading ? (
+						<Text color="green">
+							<Spinner type="dots" /> Getting your form Data
+						</Text>
+					) : (
+						<>
+							{error.err ? (
+								<Text color="red">{error.msg}</Text>
+							) : (
+								<>
+									<Text color="green">Enter FormID :</Text>
+									<TextInput
+										value={formId}
+										onChange={setFormId}
+										onSubmit={onSubmitHandler}
+									/>
+								</>
+							)}
+						</>
+					)}
+				</>
+			) : null}
+		</>
+	);
 };
 
 const CreateForm = ({ mainStep, setMainStep }) => {
@@ -186,8 +236,13 @@ const App = ({ login = false }) => {
 	const [currentStage, setCurrentStage] = useState(0);
 	const [mainStep, setMainStep] = useState(0);
 	const handleSelect = (item) => {
+		console.log(item);
 		setCurrentStage(item.value);
-		setMainStep(1);
+		if (item.value === 1) {
+			setMainStep(1);
+		} else {
+			setMainStep(2);
+		}
 	};
 
 	const items = [
