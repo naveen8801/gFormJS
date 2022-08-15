@@ -9,8 +9,9 @@ async function getFormResponse(auth, formID) {
 		version: "v1",
 		auth: auth,
 	});
-	const res = await forms.forms.get({ formId: formID });
-	console.log(res.data);
+	const res = await forms.forms.responses.list({
+		formId: formID,
+	});
 	return res.data;
 }
 

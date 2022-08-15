@@ -13,6 +13,7 @@ const getFormSchema = require("./FormFormat");
 const fs = require("fs");
 const formSchema = require("./core/FormJsonSchema");
 const Ajv = require("ajv");
+const getFormResponse = require("./core/getForm");
 const ajv = new Ajv({ strict: false });
 const validate = ajv.compile(formSchema);
 
@@ -121,8 +122,52 @@ const PathHandler = ({ FilePath, mainStep, setMainStep }) => {
 	);
 };
 
-const SeeResponse = () => {
-	return <Text>Responses</Text>;
+const SeeResponse = ({ mainStep, setMainStep }) => {
+	const [formId, setFormId] = useState("");
+	const [loading, setloading] = useState(false);
+	const [error, setError] = useState({ err: false, msg: "" });
+
+	const onSubmitHandler = async () => {
+		setloading(true);
+		if (formId.length === 0) {
+			setLoading(false);
+			setError({ err: true, msg: "Plese input a valid path" });
+		} else {
+			const auth = await GoogleAuth();
+			const data = await getFormResponse(auth, formId);
+			if (data.responses.length > 0) {
+				let res = [];
+				data.responses.map((item) => res.push(item.answers.textAnswers));
+				console.log(res);
+			}
+		}
+		// 1ADZ6FlbeaQS1EJfDl9GgC2wBt5k3JfculFWCKY7_K1Y
+	};
+
+	return (
+		<>
+			{loading ? (
+				<Text color="green">
+					<Spinner type="dots" /> Loading...
+				</Text>
+			) : (
+				<>
+					{error.err ? (
+						<Text color="red">{error.msg}</Text>
+					) : (
+						<>
+							<Text color="green">Enter formID : </Text>
+							<TextInput
+								value={formId}
+								onChange={setFormId}
+								onSubmit={onSubmitHandler}
+							/>
+						</>
+					)}
+				</>
+			)}
+		</>
+	);
 };
 
 const CreateForm = ({ mainStep, setMainStep }) => {
@@ -187,7 +232,7 @@ const App = ({ login = false }) => {
 	const [mainStep, setMainStep] = useState(0);
 	const handleSelect = (item) => {
 		setCurrentStage(item.value);
-		setMainStep(1);
+		setMainStep(item.value);
 	};
 
 	const items = [
@@ -197,7 +242,7 @@ const App = ({ login = false }) => {
 		},
 		{
 			label: "See Responses",
-			value: 2,
+			value: 3,
 		},
 	];
 
