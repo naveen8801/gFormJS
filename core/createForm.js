@@ -27,6 +27,20 @@ async function createForm(auth, info, reqList) {
 		formId: id,
 		requestBody: update,
 	});
+	const updateInfoPayload = {
+		requests: [
+			{
+				updateFormInfo: {
+					info: info,
+					updateMask: "*",
+				},
+			},
+		],
+	};
+	const updateInfo = await forms.forms.batchUpdate({
+		formId: id,
+		requestBody: updateInfoPayload,
+	});
 	return createResponse.responderUri;
 }
 
